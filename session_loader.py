@@ -11,13 +11,20 @@ import base64
 import os
 
 SESSION_ENV_VAR = "RUBIKA_SESSION"
-SESSION_FILE_PATH = os.environ.get("SESSION_FILE_PATH", "/tmp/idbot_session")
+
+# ⚠️ نکته مهم: rubpy با گرفتن یک "name" (نه مسیر کامل فایل)، خودش داخلی
+# دنبال فایلی با اسم "{name}.session" در پوشه کاری فعلی (working directory)
+# می‌گردد. پس باید فایل را دقیقاً با همین الگو بسازیم و به Client فقط
+# همان "name" (بدون پسوند) را بدهیم.
+SESSION_NAME = os.environ.get("SESSION_LABEL", "idbot_session")
+SESSION_FILE_PATH = f"{SESSION_NAME}.session"
 
 
 def ensure_session_file() -> str:
     """
     فایل سشن را از متغیر محیطی بازسازی می‌کند (اگر از قبل روی دیسک نبود)
-    و مسیر نهایی فایل سشن را برمی‌گرداند تا به rubpy.Client داده شود.
+    و "name"ای که باید به rubpy.Client داده شود را برمی‌گرداند
+    (نه مسیر کامل فایل — چون rubpy خودش پسوند .session را اضافه می‌کند).
     """
     encoded = os.environ.get(SESSION_ENV_VAR)
     if not encoded:
@@ -31,4 +38,4 @@ def ensure_session_file() -> str:
     with open(SESSION_FILE_PATH, "wb") as f:
         f.write(raw)
 
-    return SESSION_FILE_PATH
+    return SESSION_NAME
