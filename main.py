@@ -16,8 +16,8 @@ from handlers import handle_message
 
 
 async def run():
-    session_path = ensure_session_file()
-    app = Client(session_path)
+    session_name = ensure_session_file()
+    app = Client(name=session_name)
 
     @app.on_message_updates()
     async def _on_message(update: Update):
